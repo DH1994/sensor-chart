@@ -1,23 +1,43 @@
-import logo from './logo.svg';
 import './App.css';
+import { Sensor } from './sensor';
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import { useEffect, useState } from 'react';
+import { url } from './global.js'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+  const [sensorcfg, setSensorcfg] = useState([]);
+
+  useEffect(() => {
+    fetch(url + '/nodered/sensors', {
+      mode: 'cors',
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+      .then(response => response.json())
+      .then(data => setSensorcfg(data));
+  }, [])
+
+  let sensors = sensorcfg.map((sensor) => {
+    return (
+      <Row>
+        <Col>
+          <Sensor name={sensor.name} url={sensor.url} />
+        </Col>
+      </Row>
+    )
+  })
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
+      <Container>
+        {sensors}
+      </Container>
     </div>
   );
 }
